@@ -1,0 +1,22 @@
+{
+  "extends": "./configs/tsconfig.rules.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "allowJs": true,
+    "baseUrl": "src",
+    "lib": ["dom.iterable", "esnext", "webworker", "dom"],
+    "target": "ES2022",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/.*.js", // needed for config files with leading dot
+    "**/*.js"
+  ],
+  "exclude": ["node_modules"],
+  "types": ["webpack-env", "node"]
+}
