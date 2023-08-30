@@ -1,6 +1,6 @@
 import { notifyMe } from "./helpers";
 import { SWManager } from "./service-workers/sw-manager";
-import image from "./thumb.png";
+import image from "./static/img/batman.png";
 import version from "../assets/version.json";
 
 import "./style.css";
