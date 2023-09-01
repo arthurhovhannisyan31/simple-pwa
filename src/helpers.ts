@@ -32,14 +32,12 @@ export async function notifyMe(serviceWorker: SWManager): Promise<void> {
     serviceWorker.postMessage(
       createAction(SHOW_NOTIFICATION, notificationOptions),
     );
-    // new Notification('Hi there!', notificationOptions)
   } else if (Notification.permission !== "denied") {
     const permission = await Notification.requestPermission();
     if (permission === "granted") {
       serviceWorker.postMessage(
         createAction(SHOW_NOTIFICATION, notificationOptions),
       );
-      // new Notification('Hi there!', notificationOptions)
     }
   }
 }

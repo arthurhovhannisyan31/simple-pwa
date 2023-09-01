@@ -62,10 +62,10 @@ export class SWManager {
 
   postMessage = (action: Action<any>): void => {
     if (isShowNotificationAction(action)) {
-      // this.registration.showNotification(
-      //   action.payload.body as string,
-      //   action.payload,
-      // );
+      this.registration.showNotification(
+        action.payload.body as string,
+        action.payload,
+      );
     }
   };
 

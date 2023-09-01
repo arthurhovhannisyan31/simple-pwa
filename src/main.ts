@@ -10,11 +10,9 @@ console.log("MainJS", version);
 const root = document.querySelector("#root");
 if (root) {
   root.innerHTML = `
-  <h1>Page 1</h1>
   <img src=${image}>
   <button id="here">Fetch</button>
   <button id="notify">Notify</button>
-  <p>Nullam quis risus eget urna mollis ornare vel eu leo. Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Donec sed odio dui. Donec sed odio dui. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
 `;
 }
 

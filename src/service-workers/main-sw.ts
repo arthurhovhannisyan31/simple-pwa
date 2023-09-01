@@ -63,6 +63,7 @@ export class MainSW extends AbstractSW {
   onMessage: ServiceWorkerGlobalScope["onmessage"] = async (
     _e,
   ): Promise<void> => {
+    console.log(_e);
     // console.log("MainSW onMessage", _e);
     // switch (_e.data.type) {
     //   case "UPDATE": {
