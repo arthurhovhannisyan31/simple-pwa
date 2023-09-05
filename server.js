@@ -5,11 +5,14 @@ const express = require("express");
 
 const PORT = process.env.PORT || 8080;
 
-const app = express();
-app.use(express.static(__dirname));
-app.use(express.static(path.join(__dirname, "dist")));
+console.log("process.env.ASSET_PATH", process.env.ASSET_PATH);
 
-app.get("/*", (_, res) => {
+const app = express();
+app.use(`${process.env.ASSET_PATH}`, express.static(path.join(__dirname, "dist")));
+
+app.get("/*", (_req, res) => {
+  console.log(_req.originalUrl);
+
   res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 app.listen(PORT, () => {

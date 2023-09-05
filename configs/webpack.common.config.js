@@ -4,6 +4,8 @@ const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 
 const hash = "contenthash:20";
 
+require("dotenv").config();
+
 module.exports = {
   config: {
     mode: "production",
@@ -11,7 +13,7 @@ module.exports = {
     output: {
       path: path.resolve("dist"),
       filename: `[${hash}].[name].js`,
-      publicPath: "/",
+      publicPath: process.env.ASSET_PATH,
       chunkFilename: `[${hash}].[name].chunk.js`,
     },
     experiments: {

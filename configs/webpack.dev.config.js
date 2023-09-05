@@ -8,7 +8,7 @@ const { merge } = require("webpack-merge");
 const prod = require("./webpack.prod.config");
 
 module.exports = merge(prod, {
-  target: "web",
+  target: ["web"],
   mode: "development",
   devtool: "inline-source-map",
   entry: {
@@ -28,6 +28,7 @@ module.exports = merge(prod, {
     port: process.env.PORT || 4000,
     static: {
       directory: path.join(__dirname, "dist"),
+      publicPath: process.env.ASSET_PATH,
       watch: {
         interval: 1000,
         ignored: ["**/node_modules"],
