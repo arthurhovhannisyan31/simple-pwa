@@ -13,7 +13,7 @@ module.exports = {
     output: {
       path: path.resolve("dist"),
       filename: `[${hash}].[name].js`,
-      publicPath: process.env.ASSET_PATH,
+      publicPath: "",
       chunkFilename: `[${hash}].[name].chunk.js`,
     },
     experiments: {
@@ -29,4 +29,5 @@ module.exports = {
     },
   },
   hash,
+  ASSET_PATH: process.env.ASSET_PATH || "",
 };

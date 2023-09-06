@@ -23,6 +23,8 @@ export class MainSW extends AbstractSW {
     usedSpace: 0,
   };
 
+  // cache manager: init, add, delete
+  // storage manager: estimate
   // data manager: fetch, cache, strategies
   // notification manager: show, request
   // push manager: web push
@@ -116,15 +118,12 @@ export class MainSW extends AbstractSW {
   };
 
   deleteOldResources = async (): Promise<void> => {
+    // console.log("deleteOldResources");
     const versionedCache = await caches.open(CACHE_VERSION);
     const versionedCacheKeys = await versionedCache.keys();
 
     versionedCacheKeys.forEach((request) => {
-      let basePath = `${location.origin}`;
-      if (process.env.ASSET_PATH === "/") {
-        basePath += "/";
-      }
-      if (!resources.includes(request.url.replace(basePath, ""))) {
+      if (!resources.includes(request.url.replace(location.origin, ""))) {
         versionedCache.delete(request);
       }
     });
@@ -296,7 +295,7 @@ export class MainSW extends AbstractSW {
     return res as Response;
   };
 
-  /* Notifications manager */
+  /* Notification manager */
 
   onNotificationClick: ServiceWorkerGlobalScope["onnotificationclick"] = (
     _e,

@@ -5,6 +5,7 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const webpack = require("webpack");
 const { merge } = require("webpack-merge");
 
+const common = require("./webpack.common.config");
 const prod = require("./webpack.prod.config");
 
 module.exports = merge(prod, {
@@ -28,7 +29,7 @@ module.exports = merge(prod, {
     port: process.env.PORT || 4000,
     static: {
       directory: path.join(__dirname, "dist"),
-      publicPath: process.env.ASSET_PATH,
+      publicPath: common.ASSET_PATH,
       watch: {
         interval: 1000,
         ignored: ["**/node_modules"],

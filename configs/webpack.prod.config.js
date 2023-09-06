@@ -11,6 +11,8 @@ const WebpackPwaManifest = require("webpack-pwa-manifest");
 const manifest = require("./manifest.json");
 const common = require("./webpack.common.config");
 
+console.log(common.ASSET_PATH);
+
 module.exports = merge(common.config, {
   entry: {
     app: path.resolve("src", "index.ts"),
@@ -46,7 +48,7 @@ module.exports = merge(common.config, {
   },
   plugins: [
     new DefinePlugin({
-      "process.env.ASSET_PATH": JSON.stringify(process.env.ASSET_PATH),
+      "process.env.ASSET_PATH": JSON.stringify(common.ASSET_PATH),
     }),
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
@@ -64,10 +66,10 @@ module.exports = merge(common.config, {
           return false;
         }
 
-        if (process.env.ASSET_PATH !== "/") {
+        if (common !== "/") {
           return {
             key: entry.key,
-            value: `${process.env.ASSET_PATH}${entry.value}`,
+            value: `${common.ASSET_PATH}${entry.value}`,
           };
         }
 
@@ -77,6 +79,9 @@ module.exports = merge(common.config, {
         await manifest.writeTo("assets/assets-manifest.json");
       },
     }),
-    new WebpackPwaManifest(manifest),
+    new WebpackPwaManifest({
+      ...manifest,
+      publicPath: common.ASSET_PATH,
+    }),
   ],
 });

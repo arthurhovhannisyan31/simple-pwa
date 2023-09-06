@@ -30,7 +30,7 @@ module.exports = merge(common.config, {
   },
   plugins: [
     new DefinePlugin({
-      "process.env.ASSET_PATH": JSON.stringify(process.env.ASSET_PATH),
+      "process.env.ASSET_PATH": JSON.stringify(common.ASSET_PATH),
     }),
   ],
 });

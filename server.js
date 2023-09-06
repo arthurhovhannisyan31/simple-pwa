@@ -11,8 +11,6 @@ app.use(express.static(path.join(__dirname, "dist")));
 app.use(process.env.ASSET_PATH, express.static(path.join(__dirname, "dist")));
 
 app.get("/*", (_req, res) => {
-  console.log(_req.originalUrl);
-
   res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 app.listen(PORT, () => {

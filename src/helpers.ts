@@ -41,3 +41,5 @@ export async function notifyMe(serviceWorker: SWManager): Promise<void> {
     }
   }
 }
+
+export const ASSET_PATH = process.env.ASSET_PATH ?? "";
