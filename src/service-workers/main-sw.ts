@@ -63,7 +63,7 @@ export class MainSW extends AbstractSW {
   onMessage: ServiceWorkerGlobalScope["onmessage"] = async (
     _e,
   ): Promise<void> => {
-    console.log(_e);
+    // console.log(_e);
     // console.log("MainSW onMessage", _e);
     // switch (_e.data.type) {
     //   case "UPDATE": {
@@ -116,11 +116,15 @@ export class MainSW extends AbstractSW {
   };
 
   deleteOldResources = async (): Promise<void> => {
-    // console.log("deleteOldResources");
     const versionedCache = await caches.open(CACHE_VERSION);
     const versionedCacheKeys = await versionedCache.keys();
+
     versionedCacheKeys.forEach((request) => {
-      if (!resources.includes(request.url.replace(`${location.origin}/`, ""))) {
+      let basePath = `${location.origin}`;
+      if (process.env.ASSET_PATH === "/") {
+        basePath += "/";
+      }
+      if (!resources.includes(request.url.replace(basePath, ""))) {
         versionedCache.delete(request);
       }
     });

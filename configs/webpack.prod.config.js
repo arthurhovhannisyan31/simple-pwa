@@ -45,6 +45,9 @@ module.exports = merge(common.config, {
     ],
   },
   plugins: [
+    new DefinePlugin({
+      "process.env.ASSET_PATH": JSON.stringify(process.env.ASSET_PATH),
+    }),
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       template: path.resolve("public", "index.html"),
@@ -59,6 +62,13 @@ module.exports = merge(common.config, {
       customize(entry) {
         if (entry.key.match(/(service-worker|assets-manifest|index.html|LICENSE)/gm)) {
           return false;
+        }
+
+        if (process.env.ASSET_PATH !== "/") {
+          return {
+            key: entry.key,
+            value: `${process.env.ASSET_PATH}${entry.value}`,
+          };
         }
 
         return entry;

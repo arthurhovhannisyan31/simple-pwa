@@ -22,3 +22,4 @@ yarn-error.log*
 .dockerignore
 
 .yarn
+assets-manifest.json
