@@ -1,5 +1,5 @@
-import { notifyMe } from "./helpers";
-import { SWManager } from "./service-workers/sw-manager";
+import { ASSET_PATH, notifyMe } from "./helpers";
+import { SWManager } from "./service-workers/managers/sw-manager";
 import image from "./static/img/batman.png";
 import version from "../assets/version.json";
 
@@ -23,8 +23,8 @@ if (navigator.serviceWorker) {
   serviceWorker = await SWManager.register("service-worker.js", {
     type: "module",
     updateViaCache: "all",
+    scope: ASSET_PATH,
   });
-  // console.log("serviceWorker.registration", serviceWorker.registration);
 }
 
 function click(): void {

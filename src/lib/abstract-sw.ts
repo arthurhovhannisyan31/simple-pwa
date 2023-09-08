@@ -7,10 +7,6 @@ export abstract class AbstractSW {
 
   protected abstract onMessage: ServiceWorkerGlobalScope["onmessage"]
 
-  protected abstract onPush: ServiceWorkerGlobalScope["onpush"]
-
-  protected abstract onNotificationClick: ServiceWorkerGlobalScope["onnotificationclick"]
-
   protected constructor(protected worker: ServiceWorkerGlobalScope) {}
 
   protected init(

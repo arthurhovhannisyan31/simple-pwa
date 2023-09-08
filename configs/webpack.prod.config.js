@@ -11,8 +11,6 @@ const WebpackPwaManifest = require("webpack-pwa-manifest");
 const manifest = require("./manifest.json");
 const common = require("./webpack.common.config");
 
-console.log(common.ASSET_PATH);
-
 module.exports = merge(common.config, {
   entry: {
     app: path.resolve("src", "index.ts"),
