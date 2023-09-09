@@ -18,6 +18,7 @@ if (root) {
 
 let serviceWorker: SWManager;
 
+// TODO unregister case
 // Progressive Enhancement (SW supported)
 if (navigator.serviceWorker) {
   serviceWorker = await SWManager.register("service-worker.js", {

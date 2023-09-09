@@ -42,7 +42,6 @@ export class MainSW extends AbstractSW {
     this.notificationManager.initNotifications();
   }
 
-  /* General */
   onInstall: ServiceWorkerGlobalScope["oninstall"] = (_e): void => {
     _e.waitUntil(this.cacheManager.initCache());
 
