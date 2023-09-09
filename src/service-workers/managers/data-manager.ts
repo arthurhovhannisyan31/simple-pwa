@@ -28,7 +28,7 @@ export class DataManager {
     try {
       let res: Response | undefined = await fetch(request);
       if (res.status < 400) {
-        this.cacheManager.putInCache(request, res.clone());
+        this.cacheManager.put(request, res.clone());
       } else {
         res = await caches.match(request);
       }

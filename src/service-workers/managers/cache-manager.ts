@@ -8,9 +8,9 @@ export class CacheManager {
     protected assets: RequestInfo[],
   ) {}
 
-  initCache = async (): Promise<void> => this.addToCache(this.assets);
+  init = async (): Promise<void> => this.add(this.assets);
 
-  async addToCache(requests: RequestInfo[]): Promise<void> {
+  async add(requests: RequestInfo[]): Promise<void> {
     const versionedCache = await caches.open(CACHE_VERSION);
 
     try {
@@ -20,14 +20,14 @@ export class CacheManager {
     }
   }
 
-  async putInCache(request: RequestInfo, response: Response): Promise<void> {
+  async put(request: RequestInfo, response: Response): Promise<void> {
     const versionedCache = await caches.open(CACHE_VERSION);
     if (!(await versionedCache.match(request))) {
       await versionedCache.put(request, response);
     }
   }
 
-  deleteCache = async (key: string): Promise<void> => {
+  delete = async (key: string): Promise<void> => {
     await caches.delete(key);
   };
 
@@ -35,7 +35,7 @@ export class CacheManager {
     const cacheKeepList = [CACHE_VERSION];
     const keyList = await caches.keys();
     const cachesToDelete = keyList.filter((key) => !cacheKeepList.includes(key));
-    await Promise.all(cachesToDelete.map(this.deleteCache));
+    await Promise.all(cachesToDelete.map(this.delete));
   };
 
   deleteOldResources = async (): Promise<void> => {

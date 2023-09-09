@@ -43,7 +43,7 @@ export class MainSW extends AbstractSW {
   }
 
   onInstall: ServiceWorkerGlobalScope["oninstall"] = (_e): void => {
-    _e.waitUntil(this.cacheManager.initCache());
+    _e.waitUntil(this.cacheManager.init());
 
     this.skipWaiting();
   };

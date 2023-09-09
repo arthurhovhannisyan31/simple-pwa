@@ -1,6 +1,6 @@
 import { SHOW_NOTIFICATION } from "actions/actions";
 import { createAction } from "actions/createAction";
-import { type SWManager } from "service-workers/sw-manager";
+import { type SWManager } from "service-workers/managers/sw-manager";
 
 import icon from "../public/favicon.ico";
 
