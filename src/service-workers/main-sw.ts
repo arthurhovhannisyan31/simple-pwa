@@ -51,7 +51,7 @@ export class MainSW extends AbstractSW {
   onActivate: ServiceWorkerGlobalScope["onactivate"] = async (
     _e,
   ): Promise<void> => {
-    _e.waitUntil(this.worker.registration.navigationPreload.enable());
+    _e.waitUntil(this.dataManager.enableNavigationPreload());
     _e.waitUntil(this.notificationManager.subscribeToPushNotifications());
     _e.waitUntil(this.cacheManager.deleteOldCaches());
     _e.waitUntil(this.cacheManager.deleteOldResources());

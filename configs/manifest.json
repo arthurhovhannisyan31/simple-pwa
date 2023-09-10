@@ -3,7 +3,7 @@
   "short_name": "PWA",
   "start_url": "/",
   "scope": "",
-  "display": "minimal-ui",
+  "display": "fullscreen",
   "background_color": "#fff",
   "theme_color": "#fff",
   "description": "Progressive Web App - Udemy Course",

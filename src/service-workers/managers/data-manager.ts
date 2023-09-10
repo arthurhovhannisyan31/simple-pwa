@@ -7,6 +7,12 @@ export class DataManager {
     protected cacheManager: CacheManager,
   ) {}
 
+  enableNavigationPreload = async (): Promise<void> => {
+    if (this.worker.registration.navigationPreload) {
+        await this.worker.registration.navigationPreload.enable();
+    }
+  };
+
   cacheFirst = async (request: Request): Promise<Response> => {
     const versionedCache = await caches.open(CACHE_VERSION);
 
