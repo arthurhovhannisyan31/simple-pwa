@@ -9,7 +9,7 @@ export abstract class AbstractSW {
 
   protected constructor(protected worker: ServiceWorkerGlobalScope) {}
 
-  protected init(
+  protected setup(
     installHandler: ServiceWorkerGlobalScope["oninstall"],
     activateHandler: ServiceWorkerGlobalScope["onactivate"],
     fetchHandler: ServiceWorkerGlobalScope["onfetch"],

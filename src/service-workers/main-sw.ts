@@ -8,12 +8,16 @@ import assetsManifest from "../../assets/assets-manifest.json";
 import version from "../../assets/version.json";
 
 const resources = Object.values(assetsManifest);
+const { size, paths: assetsPaths } = resources.reduce((acc, { size, path }) => {
+  acc.paths.push(path);
+  acc.size += size;
+
+  return acc;
+}, { paths: [] as string[], size: 0 });
 
 console.log("MainSW", version);
 
 declare const location: WorkerLocation;
-
-// StorageManager.estimate()
 
 export class MainSW extends AbstractSW {
   cacheManager: CacheManager;
@@ -26,12 +30,17 @@ export class MainSW extends AbstractSW {
 
   constructor(sw: ServiceWorkerGlobalScope) {
     super(sw);
-    this.cacheManager = new CacheManager(sw, resources);
     this.storageManager = new StoreManager(sw);
-    this.notificationManager = new NotificationManager(sw);
+    this.cacheManager = new CacheManager(
+      sw,
+      this.storageManager,
+      assetsPaths,
+      size,
+    );
     this.dataManager = new DataManager(sw, this.cacheManager);
+    this.notificationManager = new NotificationManager(sw);
 
-    this.init(
+    this.setup(
       this.onInstall,
       this.onActivate,
       this.onFetch,
@@ -39,11 +48,16 @@ export class MainSW extends AbstractSW {
       this.notificationManager.onPush,
       this.notificationManager.onNotificationClick,
     );
-    this.notificationManager.initNotifications();
   }
 
+  init = async (): Promise<void> => {
+    // await this.notificationManager.initNotifications();
+    await this.storageManager.estimateStorage();
+    await this.cacheManager.init();
+  };
+
   onInstall: ServiceWorkerGlobalScope["oninstall"] = (_e): void => {
-    _e.waitUntil(this.cacheManager.init());
+    _e.waitUntil(this.init());
 
     this.skipWaiting();
   };
@@ -55,7 +69,6 @@ export class MainSW extends AbstractSW {
     _e.waitUntil(this.notificationManager.subscribeToPushNotifications());
     _e.waitUntil(this.cacheManager.deleteOldCaches());
     _e.waitUntil(this.cacheManager.deleteOldResources());
-    _e.waitUntil(this.storageManager.estimateStorage());
 
     this.claim();
   };

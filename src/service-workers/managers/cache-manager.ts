@@ -1,3 +1,4 @@
+import { type StoreManager } from "./store-manager";
 import { CACHE_VERSION } from "../../constants";
 
 declare const location: WorkerLocation;
@@ -5,16 +6,20 @@ declare const location: WorkerLocation;
 export class CacheManager {
   constructor(
     protected worker: ServiceWorkerGlobalScope,
+    protected storeManager: StoreManager,
     protected assets: RequestInfo[],
+    protected assetsSize: number,
   ) {}
 
   init = async (): Promise<void> => this.add(this.assets);
 
   async add(requests: RequestInfo[]): Promise<void> {
-    const versionedCache = await caches.open(CACHE_VERSION);
-
     try {
-      await versionedCache.addAll(requests);
+      if (this.storeManager.hasSpace(this.assetsSize)) {
+        const versionedCache = await caches.open(CACHE_VERSION);
+
+        await versionedCache.addAll(requests);
+      }
     } catch (err) {
       console.log(err);
     }
@@ -41,6 +46,14 @@ export class CacheManager {
   deleteOldResources = async (): Promise<void> => {
     const versionedCache = await caches.open(CACHE_VERSION);
     const versionedCacheKeys = await versionedCache.keys();
+
+    // TODO apply better resource matching
+    // const p = new URLPattern({
+    //   pathname: '/foo/:image.jpg',
+    //   baseURL: 'https://example.com',
+    // });
+    //
+    // const result = p.exec('https://example.com/foo/cat.jpg');
 
     versionedCacheKeys.forEach((request) => {
       if (!this.assets.includes(request.url.replace(location.origin, ""))) {

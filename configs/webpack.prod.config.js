@@ -59,19 +59,20 @@ module.exports = merge(common.config, {
     }),
     new WebpackAssetsManifest({
       enabled: !!process.env.__PROD__,
-      customize(entry) {
-        if (entry.key.match(/(service-worker|assets-manifest|index.html|LICENSE)/gm)) {
+      customize(entry, _, __, asset) {
+        if (entry.key.match(/(map$|service-worker|assets-manifest|index.html|LICENSE)/gm)) {
           return false;
         }
 
-        if (common !== "/") {
-          return {
-            key: entry.key,
-            value: `${common.ASSET_PATH}${entry.value}`,
-          };
-        }
+        const path = common.ASSET_PATH !== "/" ? `${common.ASSET_PATH}${entry.value}` : entry.value;
 
-        return entry;
+        return {
+          key: entry.key,
+          value: {
+            path,
+            size: asset.source.size(),
+          },
+        };
       },
       async done(manifest) {
         await manifest.writeTo("assets/assets-manifest.json");

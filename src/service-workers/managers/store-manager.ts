@@ -13,8 +13,8 @@ export class StoreManager {
     const sm = navigator.storage;
     const { usage, quota } = await sm.estimate();
     if (usage && quota) {
-      this.storageState.quotaMemory = Number((quota / (1024 * 1024)).toFixed(2));
-      this.storageState.usedMemory = Number((usage / (1024 * 1024)).toFixed(2));
+      this.storageState.quotaMemory = this.bytesToMBytes(quota);
+      this.storageState.usedMemory = this.bytesToMBytes(usage);
       this.storageState.usedSpace = Number((usage / quota).toFixed(4)) * 100;
     }
   };
@@ -24,4 +24,12 @@ export class StoreManager {
       quotaMemory: this.storageState.quotaMemory,
       usedMemory: this.storageState.usedMemory,
     });
+
+  hasSpace = (sizeBytes: number): boolean => {
+    const sizeMBytes = this.bytesToMBytes(sizeBytes);
+
+    return this.storageState.quotaMemory > sizeMBytes;
+  };
+
+  bytesToMBytes = (val: number): number => Number((val / (1024 * 1024)).toFixed(2));
 }
