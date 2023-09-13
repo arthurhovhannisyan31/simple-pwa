@@ -33,11 +33,11 @@ export class StoreManager {
 
   bytesToMBytes = (val: number): number => Number((val / (1024 * 1024)).toFixed(2));
 
-  // TODO observe
-  persistData = async () => {
+  persistData = async (): Promise<boolean | undefined> => {
     if (navigator.storage && navigator.storage.persist) {
-      const result = await navigator.storage.persist();
-      console.log(`Data persisted: ${result}`);
+      return navigator.storage.persist();
     }
   };
+
+  isPersisted = async (): Promise<boolean> => navigator.storage.persisted();
 }

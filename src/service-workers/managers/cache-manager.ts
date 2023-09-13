@@ -1,5 +1,6 @@
 import { type StoreManager } from "./store-manager";
 import { CACHE_VERSION } from "../../constants";
+import { ASSET_PATH } from "../../helpers";
 
 declare const location: WorkerLocation;
 
@@ -47,16 +48,14 @@ export class CacheManager {
     const versionedCache = await caches.open(CACHE_VERSION);
     const versionedCacheKeys = await versionedCache.keys();
 
-    // TODO apply better resource matching
-    // const p = new URLPattern({
-    //   pathname: '/foo/:image.jpg',
-    //   baseURL: 'https://example.com',
-    // });
-    //
-    // const result = p.exec('https://example.com/foo/cat.jpg');
+    let replacer = location.origin;
+
+    if (ASSET_PATH === "/") {
+      replacer += "/";
+    }
 
     versionedCacheKeys.forEach((request) => {
-      if (!this.assets.includes(request.url.replace(location.origin, ""))) {
+      if (!this.assets.includes(request.url.replace(replacer, ""))) {
         versionedCache.delete(request);
       }
     });
