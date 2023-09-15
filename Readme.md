@@ -46,6 +46,8 @@ dist/static:
 }
 ```
 > Assets log includes only specific file types, which will be served from the `SW`
+> 
+> Please see [webpack.prod](configs/webpack.prod.config.js) for details
 
 - Generate SW bundle with imported assets log
 ```
@@ -63,10 +65,15 @@ service-worker.js
   "usedSpace": 0.27 
 }
 ```
-- `SW` [Add all](https://developer.mozilla.org/en-US/docs/Web/API/Cache/addAll) assets to browser cache (Cache API)
+- `SW` uses [Cache::addAll](https://developer.mozilla.org/en-US/docs/Web/API/Cache/addAll) method to add all assets to browser cache (Cache API)
 - `SW` Serves available assets by their name after page reload
-- ![img.png](docs/image/network-diagram.png)
-- `SW` Cleanup outdated assets from the cache.
+
+![img.png](docs/image/network-diagram.png)
+
+
+- `SW` Cleanup outdated assets from the cache. Please see [CacheManager::deleteOldResources](src/service-workers/managers/cache-manager.ts) for details
+
+![img.png](docs/image/assets-change.png)
 
 In case if any changes will be applied to the project, the name of specific bundle will be changed, and it will be requested by browser (during the html parsing step) by new name.
 This way we can ensure that wrong asset will not be served for the new bundle request.
@@ -84,3 +91,7 @@ All cached resources that are not populated in the new assets log will be delete
 - [web.dev serving](https://web.dev/learn/pwa/serving/)
 - [MDN Service_Worker_API](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API)
 - [Going-Offline-Jeremy-Keith](https://www.amazon.com/Going-Offline-Jeremy-Keith/dp/1937557650)
+
+### Development
+
+Please use `yarn serve` and `yarn build` for development process since the build process is separated on 2 steps, where `SW` bild waits on the main build.

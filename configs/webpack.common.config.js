@@ -2,8 +2,8 @@ const path = require("path");
 
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 
-const hash = "contenthash:20";
-
+const isProd = process.env.__PROD__;
+const hash = isProd ? "contenthash:20" : "fullhash";
 require("dotenv").config();
 
 module.exports = {
