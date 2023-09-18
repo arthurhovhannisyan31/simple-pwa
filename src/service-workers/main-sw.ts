@@ -6,6 +6,7 @@ import { NotificationManager } from "./managers/notification-manager";
 import { StoreManager } from "./managers/store-manager";
 import assetsManifest from "../../assets/assets-manifest.json";
 import version from "../../assets/version.json";
+import { DISPOSE, LOGOUT } from "../actions/actions";
 
 const resources = Object.values(assetsManifest);
 const { size, paths: assetsPaths } = resources.reduce((acc, { size, path }) => {
@@ -57,35 +58,49 @@ export class MainSW extends AbstractSW {
   };
 
   onInstall: ServiceWorkerGlobalScope["oninstall"] = (_e): void => {
+    console.log("MainSW onInstall version", version.version);
     _e.waitUntil(this.init());
-
-    this.skipWaiting();
+    _e.waitUntil(this.skipWaiting());
   };
 
-  onActivate: ServiceWorkerGlobalScope["onactivate"] = async (
-    _e,
-  ): Promise<void> => {
+  onActivate: ServiceWorkerGlobalScope["onactivate"] = (_e): void => {
+    console.log("MainSW onActivate version", version.version);
     _e.waitUntil(this.dataManager.enableNavigationPreload());
     _e.waitUntil(this.notificationManager.subscribeToPushNotifications());
     _e.waitUntil(this.cacheManager.deleteOldCaches());
     _e.waitUntil(this.cacheManager.deleteOldResources());
-
-    this.claim();
+    _e.waitUntil(this.claim());
   };
 
   onMessage: ServiceWorkerGlobalScope["onmessage"] = async (
     _e,
   ): Promise<void> => {
     const senderId = (_e.source as WindowClient).id;
-    try {
-      const clients = await this.worker.clients?.matchAll() ?? [];
-      const restClients = clients.filter((client) => client.id !== senderId);
-      restClients.forEach((client) => client.postMessage({
-        type: "MESSAGE",
-        payload: "Hello from MainSW",
-      }));
-    } catch (_err) {
-      console.log(_err);
+
+    console.log("MainSW onMessage ", {
+      version: version.version,
+      senderId,
+      data: _e.data,
+    });
+    console.log("MainSW onMessage event", _e);
+
+    switch (_e.data.type) {
+      case LOGOUT: {
+        try {
+          const clients = await this.worker.clients?.matchAll() ?? [];
+          const restClients = clients.filter((client) => client.id !== senderId);
+          restClients.forEach((client) => client.postMessage({
+            type: "LOGOUT",
+            payload: "Game over",
+          }));
+        } catch (_err) {
+          console.log(_err);
+        }
+        break;
+      }
+      case DISPOSE: {
+        break;
+      }
     }
   };
 
@@ -101,6 +116,10 @@ export class MainSW extends AbstractSW {
       );
     }
   };
+
+  dispose(): void {
+    // clean all caches
+  }
 }
 
 declare const self: ServiceWorkerGlobalScope;

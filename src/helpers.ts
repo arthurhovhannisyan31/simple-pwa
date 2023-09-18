@@ -1,5 +1,5 @@
-import { SHOW_NOTIFICATION } from "actions/actions";
-import { createAction } from "actions/createAction";
+import { LOGOUT, SHOW_NOTIFICATION } from "actions/actions";
+import { createAction, createSimpleAction } from "actions/createAction";
 import { type SWManager } from "service-workers/managers/sw-manager";
 
 import icon from "../public/favicon.ico";
@@ -43,3 +43,9 @@ export async function notifyMe(serviceWorker: SWManager): Promise<void> {
 }
 
 export const ASSET_PATH = process.env.ASSET_PATH ?? "";
+
+export function logout(serviceWorker: SWManager): void {
+  serviceWorker.postMessage(
+    createSimpleAction(LOGOUT),
+  );
+}

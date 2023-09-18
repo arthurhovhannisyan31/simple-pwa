@@ -6,18 +6,27 @@ export class SWManager {
 
   registration: ServiceWorkerRegistration;
 
-  protected constructor(sw: ServiceWorkerRegistration) {
-    this.container = navigator.serviceWorker;
-    this.container.onmessage = this.onMessage;
+  sw: ServiceWorker | null = null;
 
-    this.registration = sw;
+  protected constructor(swRegistration: ServiceWorkerRegistration) {
+    this.container = navigator.serviceWorker;
+    this.init();
+
+    this.registration = swRegistration;
     this.registration.onupdatefound = this.onUpdateFound;
 
     if (this.registration.installing) {
-      this.registration.installing.onstatechange = this.onStateChange;
+      this.registration.installing.onstatechange = this.onStateChange; // ??
     }
 
     this.onRegistrationEnd();
+  }
+
+  init(): void {
+    this.sw = this.container.controller;
+    this.container.onmessage = this.onMessage;
+    this.container.onmessageerror = this.onMessageError;
+    this.container.oncontrollerchange = this.onControllerChange;
   }
 
   static async register(
@@ -25,9 +34,9 @@ export class SWManager {
     options?: RegistrationOptions,
   ): Promise<SWManager> {
     try {
-      const sw = await navigator.serviceWorker.register(url, options);
+      const swRegistration = await navigator.serviceWorker.register(url, options);
 
-      return new SWManager(sw);
+      return new SWManager(swRegistration);
     } catch (err) {
       throw new Error("Service worker registration failed", {
         cause: err as Error,
@@ -35,17 +44,27 @@ export class SWManager {
     }
   }
 
+  protected onControllerChange: ServiceWorkerContainer["oncontrollerchange"] = (_e) => {
+    console.log("SWManager onControllerChange", _e);
+
+    if (navigator.serviceWorker.controller) {
+      this.sw = navigator.serviceWorker.controller;
+    }
+  };
+
   protected onRegistrationEnd = (): void => {
     // console.log("SWManager onRegistrationEnd");
 
-    this.registration.active?.postMessage("SWManager: Registration end");
+    this.sw?.postMessage({ type: "REGISTRATION_END", data: "SWManager: Registration end" });
+    // this.registration.active?.postMessage("SWManager: Registration end");
   };
 
   protected onUpdateFound: ServiceWorkerRegistration["onupdatefound"] = (
     _e,
   ): void => {
     if (this.registration.installing) {
-      this.registration.installing.postMessage({ type: "UPDATE" });
+      this.sw?.postMessage({ type: "UPDATE" });
+      // this.registration.installing.postMessage({ type: "UPDATE" });
     }
     // console.log("SWManager onupdatefound: ", _e);
   };
@@ -53,11 +72,16 @@ export class SWManager {
   protected onStateChange: ServiceWorker["onstatechange"] = (_e) => {
     // console.log("SWManager onstatechange: ", _e);
 
+    // this.sw?.postMessage("SWManager: state change");
     this.registration.active?.postMessage("SWManager: state change");
   };
 
   protected onMessage: ServiceWorkerContainer["onmessage"] = (_e) => {
-    // console.log("SWManager onmessage: ", e);
+    console.log("SWManager onmessage: ", _e);
+  };
+
+  protected onMessageError: ServiceWorkerContainer["onmessageerror"] = (_e) => {
+    console.log("SWManager onmessagerror", _e);
   };
 
   postMessage = (action: Action<any>): void => {
@@ -66,10 +90,12 @@ export class SWManager {
         action.payload.body as string,
         action.payload,
       );
+    } else {
+      this.sw?.postMessage(action);
     }
   };
 
-  unregister(): void {
-    this.registration.unregister();
+  unregister(): Promise<boolean> {
+    return this.registration.unregister();
   }
 }

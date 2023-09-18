@@ -1,4 +1,4 @@
-import { ASSET_PATH, notifyMe } from "./helpers";
+import { ASSET_PATH, logout, notifyMe } from "./helpers";
 import { SWManager } from "./service-workers/managers/sw-manager";
 import image from "./static/img/batman.png";
 import version from "../assets/version.json";
@@ -13,6 +13,7 @@ if (root) {
   <img src=${image}>
   <button id="here">Fetch</button>
   <button id="notify">Notify</button>
+  <button id="logout">Logout</button>
 `;
 }
 
@@ -37,3 +38,6 @@ hereBtn?.addEventListener("click", click);
 
 const notifyBtn = document.getElementById("notify");
 notifyBtn?.addEventListener("click", () => notifyMe(serviceWorker));
+
+const logoutBtn = document.getElementById("logout");
+logoutBtn?.addEventListener("click", () => logout(serviceWorker));

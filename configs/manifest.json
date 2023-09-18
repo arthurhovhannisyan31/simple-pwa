@@ -1,4 +1,5 @@
 {
+  "id": "0.0.1",
   "name": "Progressive Web App",
   "short_name": "PWA",
   "start_url": "/",
