@@ -33,15 +33,20 @@ export class CacheManager {
     }
   }
 
-  delete = async (key: string): Promise<void> => {
+  deleteCache = async (key: string): Promise<void> => {
     await caches.delete(key);
+  };
+
+  deleteAllCaches = async (): Promise<void> => {
+    const keys = await caches.keys();
+    await Promise.all(keys.map(this.deleteCache));
   };
 
   deleteOldCaches = async (): Promise<void> => {
     const cacheKeepList = [CACHE_VERSION];
     const keyList = await caches.keys();
     const cachesToDelete = keyList.filter((key) => !cacheKeepList.includes(key));
-    await Promise.all(cachesToDelete.map(this.delete));
+    await Promise.all(cachesToDelete.map(this.deleteCache));
   };
 
   deleteOldResources = async (): Promise<void> => {

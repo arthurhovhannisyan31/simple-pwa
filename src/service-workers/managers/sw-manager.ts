@@ -1,6 +1,8 @@
 import { isShowNotificationAction } from "actions/show-notification";
 import { type Action } from "actions/types";
 
+import { createSimpleAction } from "../../actions/createAction";
+
 export class SWManager {
   container: ServiceWorkerContainer;
 
@@ -53,31 +55,24 @@ export class SWManager {
   };
 
   protected onRegistrationEnd = (): void => {
-    // console.log("SWManager onRegistrationEnd");
-
+    this.sw = this.registration.active;
     this.sw?.postMessage({ type: "REGISTRATION_END", data: "SWManager: Registration end" });
-    // this.registration.active?.postMessage("SWManager: Registration end");
   };
 
   protected onUpdateFound: ServiceWorkerRegistration["onupdatefound"] = (
     _e,
   ): void => {
-    if (this.registration.installing) {
-      this.sw?.postMessage({ type: "UPDATE" });
-      // this.registration.installing.postMessage({ type: "UPDATE" });
-    }
-    // console.log("SWManager onupdatefound: ", _e);
+    this.sw?.postMessage(createSimpleAction("UPDATE_FOUND"));
   };
 
   protected onStateChange: ServiceWorker["onstatechange"] = (_e) => {
-    // console.log("SWManager onstatechange: ", _e);
-
-    // this.sw?.postMessage("SWManager: state change");
-    this.registration.active?.postMessage("SWManager: state change");
+    this.sw = this.registration.active;
+    this.sw?.postMessage(createSimpleAction("SWManager: state change"));
   };
 
   protected onMessage: ServiceWorkerContainer["onmessage"] = (_e) => {
     console.log("SWManager onmessage: ", _e);
+    console.log("SWManager onmessage: ", _e.source);
   };
 
   protected onMessageError: ServiceWorkerContainer["onmessageerror"] = (_e) => {

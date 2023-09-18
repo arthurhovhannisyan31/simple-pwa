@@ -6,7 +6,13 @@ import { NotificationManager } from "./managers/notification-manager";
 import { StoreManager } from "./managers/store-manager";
 import assetsManifest from "../../assets/assets-manifest.json";
 import version from "../../assets/version.json";
-import { DISPOSE, LOGOUT } from "../actions/actions";
+import {
+CONNECT_CLIENTS,
+DISPOSE,
+LOGOUT,
+MESSAGE_PORT,
+} from "../actions/actions";
+import { createSimpleAction } from "../actions/createAction";
 
 const resources = Object.values(assetsManifest);
 const { size, paths: assetsPaths } = resources.reduce((acc, { size, path }) => {
@@ -15,8 +21,6 @@ const { size, paths: assetsPaths } = resources.reduce((acc, { size, path }) => {
 
   return acc;
 }, { paths: [] as string[], size: 0 });
-
-console.log("MainSW", version);
 
 declare const location: WorkerLocation;
 
@@ -72,36 +76,65 @@ export class MainSW extends AbstractSW {
     _e.waitUntil(this.claim());
   };
 
+  getClients = async (senderId = ""): Promise<Client[]> => {
+    const clients = await this.worker.clients?.matchAll({
+      includeUncontrolled: true,
+    }) ?? [];
+
+    return clients.filter((client) => client.id !== senderId);
+  };
+
   onMessage: ServiceWorkerGlobalScope["onmessage"] = async (
     _e,
   ): Promise<void> => {
     const senderId = (_e.source as WindowClient).id;
 
-    console.log("MainSW onMessage ", {
-      version: version.version,
-      senderId,
-      data: _e.data,
-    });
-    console.log("MainSW onMessage event", _e);
+    console.log("MainSW onMessage data", _e.data);
 
     switch (_e.data.type) {
       case LOGOUT: {
         try {
-          const clients = await this.worker.clients?.matchAll() ?? [];
-          const restClients = clients.filter((client) => client.id !== senderId);
-          restClients.forEach((client) => client.postMessage({
+          const clients = await this.getClients(senderId);
+          clients.forEach((client) => client.postMessage({
             type: "LOGOUT",
             payload: "Game over",
           }));
         } catch (_err) {
-          console.log(_err);
+          console.error(_err);
         }
         break;
       }
       case DISPOSE: {
+        await this.cacheManager.deleteAllCaches();
+        break;
+      }
+      case CONNECT_CLIENTS: {
+        try {
+          const clients = await this.getClients(senderId);
+
+          await Promise.all(
+            clients.map((client) => {
+              const mc = new MessageChannel();
+              mc.port1.onmessage = this.onMessagePort;
+
+              return client.postMessage(
+                createSimpleAction(MESSAGE_PORT),
+                [mc.port2],
+              );
+            }),
+          );
+        } catch (err) {
+          console.error(err);
+        }
+
         break;
       }
     }
+  };
+
+  onMessagePort: MessagePort["onmessage"] = (msg) => {
+    // TODO redirect or bind to this.onMessage
+    console.log("MainSW onMessagePort", msg);
   };
 
   onFetch: ServiceWorkerGlobalScope["onfetch"] = async (

@@ -1,4 +1,9 @@
-import { ASSET_PATH, logout, notifyMe } from "./helpers";
+import {
+ASSET_PATH,
+logout,
+notifyMe,
+connectClients,
+} from "./helpers";
 import { SWManager } from "./service-workers/managers/sw-manager";
 import image from "./static/img/batman.png";
 import version from "../assets/version.json";
@@ -14,6 +19,8 @@ if (root) {
   <button id="here">Fetch</button>
   <button id="notify">Notify</button>
   <button id="logout">Logout</button>
+  <button id="connect-clients">Connect clients</button>
+<!--  <button id="connect-clients">Connect clients</button>-->
 `;
 }
 
@@ -41,3 +48,6 @@ notifyBtn?.addEventListener("click", () => notifyMe(serviceWorker));
 
 const logoutBtn = document.getElementById("logout");
 logoutBtn?.addEventListener("click", () => logout(serviceWorker));
+
+const connectClientsBtn = document.getElementById("connect-clients");
+connectClientsBtn?.addEventListener("click", () => connectClients(serviceWorker));

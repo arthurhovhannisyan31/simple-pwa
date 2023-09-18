@@ -1,4 +1,4 @@
-import { LOGOUT, SHOW_NOTIFICATION } from "actions/actions";
+import { CONNECT_CLIENTS, LOGOUT, SHOW_NOTIFICATION } from "actions/actions";
 import { createAction, createSimpleAction } from "actions/createAction";
 import { type SWManager } from "service-workers/managers/sw-manager";
 
@@ -47,5 +47,11 @@ export const ASSET_PATH = process.env.ASSET_PATH ?? "";
 export function logout(serviceWorker: SWManager): void {
   serviceWorker.postMessage(
     createSimpleAction(LOGOUT),
+  );
+}
+
+export function connectClients(serviceWorker: SWManager): void {
+  serviceWorker.postMessage(
+    createSimpleAction(CONNECT_CLIENTS),
   );
 }

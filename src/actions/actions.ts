@@ -1,3 +1,5 @@
 export const SHOW_NOTIFICATION = "SHOW_NOTIFICATION";
 export const LOGOUT = "LOGOUT";
 export const DISPOSE = "DISPOSE";
+export const CONNECT_CLIENTS = "CONNECT_CLIENTS";
+export const MESSAGE_PORT = "MESSAGE_PORT";
