@@ -3,6 +3,7 @@ ASSET_PATH,
 logout,
 notifyMe,
 connectClients,
+unregisterSW,
 } from "./helpers";
 import { SWManager } from "./service-workers/managers/sw-manager";
 import image from "./static/img/batman.png";
@@ -20,7 +21,7 @@ if (root) {
   <button id="notify">Notify</button>
   <button id="logout">Logout</button>
   <button id="connect-clients">Connect clients</button>
-<!--  <button id="connect-clients">Connect clients</button>-->
+  <button id="unregister-sw">Unregister</button>
 `;
 }
 
@@ -51,3 +52,6 @@ logoutBtn?.addEventListener("click", () => logout(serviceWorker));
 
 const connectClientsBtn = document.getElementById("connect-clients");
 connectClientsBtn?.addEventListener("click", () => connectClients(serviceWorker));
+
+const unregisterSWBtn = document.getElementById("unregister-sw");
+unregisterSWBtn?.addEventListener("click", () => unregisterSW(serviceWorker));

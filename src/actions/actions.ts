@@ -3,3 +3,4 @@ export const LOGOUT = "LOGOUT";
 export const DISPOSE = "DISPOSE";
 export const CONNECT_CLIENTS = "CONNECT_CLIENTS";
 export const MESSAGE_PORT = "MESSAGE_PORT";
+export const UNREGISTER_SW = "UNREGISTER_SW";

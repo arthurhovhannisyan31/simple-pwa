@@ -1,4 +1,9 @@
-import { CONNECT_CLIENTS, LOGOUT, SHOW_NOTIFICATION } from "actions/actions";
+import {
+CONNECT_CLIENTS,
+LOGOUT,
+SHOW_NOTIFICATION,
+UNREGISTER_SW,
+} from "actions/actions";
 import { createAction, createSimpleAction } from "actions/createAction";
 import { type SWManager } from "service-workers/managers/sw-manager";
 
@@ -53,5 +58,11 @@ export function logout(serviceWorker: SWManager): void {
 export function connectClients(serviceWorker: SWManager): void {
   serviceWorker.postMessage(
     createSimpleAction(CONNECT_CLIENTS),
+  );
+}
+
+export function unregisterSW(serviceWorker: SWManager): void {
+  serviceWorker.postMessage(
+    createSimpleAction(UNREGISTER_SW),
   );
 }

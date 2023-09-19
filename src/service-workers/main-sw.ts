@@ -11,6 +11,7 @@ CONNECT_CLIENTS,
 DISPOSE,
 LOGOUT,
 MESSAGE_PORT,
+UNREGISTER_SW,
 } from "../actions/actions";
 import { createSimpleAction } from "../actions/createAction";
 
@@ -70,7 +71,7 @@ export class MainSW extends AbstractSW {
   onActivate: ServiceWorkerGlobalScope["onactivate"] = (_e): void => {
     console.log("MainSW onActivate version", version.version);
     _e.waitUntil(this.dataManager.enableNavigationPreload());
-    _e.waitUntil(this.notificationManager.subscribeToPushNotifications());
+    // _e.waitUntil(this.notificationManager.subscribeToPushNotifications());
     _e.waitUntil(this.cacheManager.deleteOldCaches());
     _e.waitUntil(this.cacheManager.deleteOldResources());
     _e.waitUntil(this.claim());
@@ -129,6 +130,10 @@ export class MainSW extends AbstractSW {
 
         break;
       }
+      case UNREGISTER_SW: {
+        await this.dispose();
+        break;
+      }
     }
   };
 
@@ -150,8 +155,8 @@ export class MainSW extends AbstractSW {
     }
   };
 
-  dispose(): void {
-    // clean all caches
+  async dispose(): Promise<void> {
+    await this.cacheManager.deleteAllCaches();
   }
 }
 

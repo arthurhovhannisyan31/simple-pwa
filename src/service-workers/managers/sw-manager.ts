@@ -1,6 +1,7 @@
 import { isShowNotificationAction } from "actions/show-notification";
 import { type Action } from "actions/types";
 
+import { SHOW_NOTIFICATION, UNREGISTER_SW } from "../../actions/actions";
 import { createSimpleAction } from "../../actions/createAction";
 
 export class SWManager {
@@ -79,14 +80,26 @@ export class SWManager {
     console.log("SWManager onmessagerror", _e);
   };
 
-  postMessage = (action: Action<any>): void => {
-    if (isShowNotificationAction(action)) {
-      this.registration.showNotification(
-        action.payload.body as string,
-        action.payload,
-      );
-    } else {
-      this.sw?.postMessage(action);
+  postMessage = async (action: Action<any>): Promise<void> => {
+    switch (action.type) {
+      case SHOW_NOTIFICATION: {
+        if (isShowNotificationAction(action)) {
+          this.registration.showNotification(
+            action.payload.body as string,
+            action.payload,
+          );
+        }
+        break;
+      }
+      case UNREGISTER_SW: {
+        this.sw?.postMessage(action);
+        await this.unregister();
+        break;
+      }
+      default: {
+        this.sw?.postMessage(action);
+        break;
+      }
     }
   };
 
