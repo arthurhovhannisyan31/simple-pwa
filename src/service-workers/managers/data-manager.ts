@@ -79,8 +79,6 @@ export class DataManager {
         return responseFromCache;
       }
 
-      // check online status before network request
-
       let response: Response = await preloadedResponse;
       if (!response || response.status >= 400) {
         const fetchResponse = await fetch(request);

@@ -16,18 +16,19 @@ console.log("MainJS", version);
 const root = document.querySelector("#root");
 if (root) {
   root.innerHTML = `
-  <img src=${image}>
-  <button id="here">Fetch</button>
-  <button id="notify">Notify</button>
-  <button id="logout">Logout</button>
-  <button id="connect-clients">Connect clients</button>
-  <button id="unregister-sw">Unregister</button>
+  <div style="display: flex; flex-direction: column; align-items: flex-start">
+    <img src=${image}>
+    <button id="here">Fetch</button>
+    <button id="notify">Notify</button>
+    <button id="logout">Logout</button>
+    <button id="connect-clients">Connect clients</button>
+    <button id="unregister-sw">Unregister</button>
+  </div>
 `;
 }
 
 let serviceWorker: SWManager;
 
-// TODO unregister case
 // Progressive Enhancement (SW supported)
 if (navigator.serviceWorker) {
   serviceWorker = await SWManager.register("service-worker.js", {
