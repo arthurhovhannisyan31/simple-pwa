@@ -39,6 +39,15 @@ export class SWManager {
     try {
       const swRegistration = await navigator.serviceWorker.register(url, options);
 
+      // let swRegistration;
+      // swRegistration = await navigator.serviceWorker.getRegistration(url);
+      //
+      // if (!swRegistration || !swRegistration.active) {
+      //   swRegistration = await navigator.serviceWorker.register(url, options);
+      // } else {
+      //   await swRegistration.update();
+      // }
+
       return new SWManager(swRegistration);
     } catch (err) {
       throw new Error("Service worker registration failed", {

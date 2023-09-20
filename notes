@@ -1,0 +1,16 @@
+Failed to execute 'addAll' on 'Cache': Request failed
+
+ async add(requests: RequestInfo[]): Promise<void> {
+    try {
+      const estimation = this.storeManager.getEstimation();
+      const sizeMBytes = bytesToMBytes(this.assetsSize);
+
+      if (estimation.quotaMemory > sizeMBytes) {
+        const versionedCache = await caches.open(CACHE_VERSION);
+
+        await versionedCache.addAll(requests);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
