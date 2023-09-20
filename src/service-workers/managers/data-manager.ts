@@ -72,11 +72,13 @@ export class DataManager {
     preloadedResponse: FetchEvent["preloadResponse"],
   ): Promise<Response> => {
     try {
-      const versionedCache = await caches.open(CACHE_VERSION);
-      const responseFromCache = await versionedCache.match(request);
+      if (request.method === "GET") {
+        const versionedCache = await caches.open(CACHE_VERSION);
+        const responseFromCache = await versionedCache.match(request);
 
-      if (responseFromCache) {
-        return responseFromCache;
+        if (responseFromCache) {
+          return responseFromCache;
+        }
       }
 
       let response: Response = await preloadedResponse;

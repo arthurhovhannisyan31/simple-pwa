@@ -1,6 +1,6 @@
 import { type StoreManager } from "./store-manager";
 import { CACHE_VERSION } from "../../constants";
-import { ASSET_PATH } from "../../helpers";
+import { ASSET_PATH, bytesToMBytes } from "../../helpers";
 
 declare const location: WorkerLocation;
 
@@ -16,7 +16,10 @@ export class CacheManager {
 
   async add(requests: RequestInfo[]): Promise<void> {
     try {
-      if (this.storeManager.hasSpace(this.assetsSize)) {
+      const estimation = this.storeManager.getEstimation();
+      const sizeMBytes = bytesToMBytes(this.assetsSize);
+
+      if (estimation.quotaMemory > sizeMBytes) {
         const versionedCache = await caches.open(CACHE_VERSION);
 
         await versionedCache.addAll(requests);

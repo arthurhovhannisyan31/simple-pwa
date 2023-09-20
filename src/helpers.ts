@@ -66,3 +66,5 @@ export function unregisterSW(serviceWorker: SWManager): void {
     createSimpleAction(UNREGISTER_SW),
   );
 }
+
+export const bytesToMBytes = (val: number): number => Number((val / (1024 * 1024)).toFixed(2));
