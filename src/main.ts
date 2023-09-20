@@ -31,11 +31,15 @@ let serviceWorker: SWManager;
 
 // Progressive Enhancement (SW supported)
 if (navigator.serviceWorker) {
-  serviceWorker = await SWManager.register("service-worker.js", {
-    type: "module",
-    updateViaCache: "all",
-    scope: ASSET_PATH,
-  });
+  try {
+    serviceWorker = await SWManager.register("service-worker.js", {
+      type: "module",
+      updateViaCache: "all",
+      scope: ASSET_PATH,
+    });
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 function click(): void {
