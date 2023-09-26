@@ -26,10 +26,12 @@ export abstract class AbstractSW {
   }
 
   protected skipWaiting(): Promise<void> {
+    // Force activation
     return this.worker.skipWaiting();
   }
 
   protected claim(): Promise<void> {
+    // Claim the service work for this client, forcing `controllerchange` event
     return this.worker.clients.claim();
   }
 }

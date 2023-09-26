@@ -4,9 +4,14 @@ import { urlBase64ToUint8Array } from "../helpers";
 export class NotificationManager {
   constructor(protected worker: ServiceWorkerGlobalScope) {}
 
-  onNotificationClick: ServiceWorkerGlobalScope["onnotificationclick"] = (
+  onNotificationClick: ServiceWorkerGlobalScope["onnotificationclick"] = async (
     _e,
-  ) => {
+  ): Promise<void> => {
+    const clients = await this.worker.clients.matchAll();
+    if (clients.length) {
+      // TODO check event source id to focus on sender client
+      (clients[0] as WindowClient).focus();
+    }
     _e.notification.close();
   };
 
