@@ -40,10 +40,11 @@ export class NotificationManager {
   };
 
   onPush: ServiceWorkerGlobalScope["onpush"] = async (_e) => {
-    // console.log("MainSW onPush", _e);
+    console.log("MainSW onPush", _e);
+    console.log(_e.data?.text());
     try {
       await this.worker.registration.showNotification(
-        "A notification from main-sw",
+        `${_e.data?.text()}`,
       );
     } catch (err) {
       console.log(err);
@@ -51,19 +52,22 @@ export class NotificationManager {
   };
 
   subscribeToPushNotifications = async (): Promise<void> => {
-    const publicKey = "BB7ilDNWfRseWXJK0uhFP0BRw_s2aA-c_b8rjzltQl6gmIX1yqj5ssur823CBIuPfivE49uwAtJTc0WMLhigvo8";
+    const publicKey = "BMRPTBGMgOH2MoyJP5uouq7Weq-FjTQxGixWuUFrAAEMOMq0V8mlQ11oKkEAorkOu7r8dB0JcgvB5neAvFrnogI";
 
     try {
       if (this.worker.registration) {
         let subscription = await this.worker.registration.pushManager.getSubscription();
+        console.log("subscription0", JSON.stringify(subscription));
 
         if (!subscription) {
           const applicationServerKey = urlBase64ToUint8Array(publicKey);
+          console.log("applicationServerKey", applicationServerKey);
 
           subscription = await this.worker.registration.pushManager.subscribe({
             userVisibleOnly: true,
             applicationServerKey,
           });
+          console.log("subscription1", JSON.stringify(subscription));
         }
       }
     } catch (_err) {

@@ -57,7 +57,7 @@ export class MainSW extends AbstractSW {
   }
 
   init = async (): Promise<void> => {
-    // await this.notificationManager.initNotifications();
+    await this.notificationManager.initNotifications();
     await this.storageManager.estimateStorage();
     await this.cacheManager.init();
   };
@@ -71,7 +71,7 @@ export class MainSW extends AbstractSW {
   onActivate: ServiceWorkerGlobalScope["onactivate"] = (_e): void => {
     console.log("MainSW onActivate version", version.version);
     _e.waitUntil(this.dataManager.enableNavigationPreload());
-    // _e.waitUntil(this.notificationManager.subscribeToPushNotifications());
+    _e.waitUntil(this.notificationManager.subscribeToPushNotifications());
     _e.waitUntil(this.cacheManager.deleteOldCaches());
     _e.waitUntil(this.cacheManager.deleteOldResources());
     _e.waitUntil(this.claim());
@@ -90,7 +90,7 @@ export class MainSW extends AbstractSW {
   ): Promise<void> => {
     const senderId = (_e.source as WindowClient).id;
 
-    console.log("MainSW onMessage data", _e.data);
+    // console.log("MainSW onMessage data", _e.data);
 
     switch (_e.data.type) {
       case LOGOUT: {
