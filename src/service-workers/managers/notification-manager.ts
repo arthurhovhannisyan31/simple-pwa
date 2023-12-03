@@ -20,7 +20,7 @@ export class NotificationManager {
 
     if (Notification.permission === "granted") {
       if (this.worker?.registration?.active) {
-        await this.worker.registration.showNotification("Registraction notification from main-sw", {
+        await this.worker.registration.showNotification("Registration notification from main-sw", {
           body: "Notification body",
           icon: favicon,
           tag: "init",
