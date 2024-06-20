@@ -72,7 +72,6 @@ export class DataManager {
     preloadedResponse: FetchEvent["preloadResponse"],
   ): Promise<Response> => {
     try {
-      if (request.method === "GET") {
         const versionedCache = await caches.open(CACHE_VERSION);
         const responseFromCache = await versionedCache.match(request);
 
@@ -87,16 +86,11 @@ export class DataManager {
           if (fetchResponse.status < 400) {
             response = fetchResponse;
 
-            // if (supportedFiles.includes(request.url)) {
-            //   await this.cacheManager.putInCache(request, response.clone());
-            // }
+            await this.cacheManager.put(request, response.clone());
           }
         }
 
         return response;
-      }
-
-        return await fetch(request);
     } catch (err: unknown) {
       throw new Error("Unable to fetch request", {
         cause: err as Error,

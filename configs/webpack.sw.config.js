@@ -6,6 +6,8 @@ const { merge } = require("webpack-merge");
 const common = require("./webpack.common.config");
 
 module.exports = merge(common.config, {
+  mode: "production",
+  target: ["web", "es2020"],
   entry: {
     "service-worker": {
       import: path.resolve("src", "service-workers", "main-sw.ts"),

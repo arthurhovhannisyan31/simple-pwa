@@ -1,18 +1,26 @@
-import { type StoreManager } from "./store-manager";
-import { CACHE_VERSION } from "../../constants";
-import { ASSET_PATH, bytesToMBytes } from "../../helpers";
+import type { StoreManager } from "./store-manager";
+import type { AssetsManifest } from "../types";
 
-declare const location: WorkerLocation;
+import { CACHE_VERSION } from "../../constants";
+import { bytesToMBytes } from "../../helpers";
+import { getAssetsConfig } from "../helpers";
 
 export class CacheManager {
+  assets: RequestInfo[] = [];
+
+  assetsSize = 0; // MB
+
   constructor(
     protected worker: ServiceWorkerGlobalScope,
     protected storeManager: StoreManager,
-    protected assets: RequestInfo[],
-    protected assetsSize: number,
   ) {}
 
-  init = async (): Promise<void> => this.add(this.assets);
+  init = async (assetsManifest: AssetsManifest): Promise<void> => {
+    const { size, paths } = getAssetsConfig(assetsManifest);
+
+    this.assets = paths;
+    this.assetsSize = bytesToMBytes(size);
+  };
 
   async add(requests: RequestInfo[]): Promise<void> {
     try {
@@ -30,9 +38,18 @@ export class CacheManager {
   }
 
   async put(request: RequestInfo, response: Response): Promise<void> {
-    const versionedCache = await caches.open(CACHE_VERSION);
-    if (!(await versionedCache.match(request))) {
-      await versionedCache.put(request, response);
+    try {
+      await this.storeManager.estimate();
+      const estimation = this.storeManager.getEstimation();
+      const responseSize = bytesToMBytes(Number(response.headers.get("content-length") ?? 0));
+
+      if (estimation.quotaMemory > responseSize) {
+        const versionedCache = await caches.open(CACHE_VERSION);
+
+        await versionedCache.put(request, response);
+      }
+    } catch (err) {
+      console.log(err);
     }
   }
 
@@ -55,17 +72,20 @@ export class CacheManager {
   deleteOldResources = async (): Promise<void> => {
     const versionedCache = await caches.open(CACHE_VERSION);
     const versionedCacheKeys = await versionedCache.keys();
-
-    let replacer = location.origin;
-
-    if (ASSET_PATH === "/") {
-      replacer += "/";
-    }
+    const removedAssets: string[] = [];
 
     versionedCacheKeys.forEach((request) => {
-      if (!this.assets.includes(request.url.replace(replacer, ""))) {
+      if (!this.assets.some((asset) => request.url.includes(asset as string))) {
+        removedAssets.push(request.url);
+
         versionedCache.delete(request);
       }
     });
+
+    if (removedAssets.length) {
+      console.group("Debug: Remove outdated assets from cache");
+      removedAssets.forEach((el) => console.log(el));
+      console.groupEnd();
+    }
   };
 }

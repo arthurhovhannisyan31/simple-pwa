@@ -4,24 +4,18 @@ import { CacheManager } from "./managers/cache-manager";
 import { DataManager } from "./managers/data-manager";
 import { NotificationManager } from "./managers/notification-manager";
 import { StoreManager } from "./managers/store-manager";
+import { type AssetsManifest } from "./types";
 import assetsManifest from "../../assets/assets-manifest.json";
-import version from "../../assets/version.json";
 import {
-CONNECT_CLIENTS,
-DISPOSE,
-LOGOUT,
-MESSAGE_PORT,
-UNREGISTER_SW,
+  CONNECT_CLIENT,
+  CONNECT_CLIENTS,
+  DISPOSE,
+  LOGOUT,
+  MESSAGE_PORT,
+  UNREGISTER_SW,
 } from "../actions/actions";
 import { createSimpleAction } from "../actions/createAction";
-
-const resources = Object.values(assetsManifest);
-const { size, paths: assetsPaths } = resources.reduce((acc, { size, path }) => {
-  acc.paths.push(path);
-  acc.size += size;
-
-  return acc;
-}, { paths: [] as string[], size: 0 });
+import { SW_VERSION } from "../constants";
 
 declare const location: WorkerLocation;
 
@@ -34,15 +28,14 @@ export class MainSW extends AbstractSW {
 
   dataManager: DataManager;
 
+  client?: Client;
+
+  version = SW_VERSION;
+
   constructor(sw: ServiceWorkerGlobalScope) {
     super(sw);
     this.storageManager = new StoreManager(sw);
-    this.cacheManager = new CacheManager(
-      sw,
-      this.storageManager,
-      assetsPaths,
-      size,
-    );
+    this.cacheManager = new CacheManager(sw, this.storageManager);
     this.dataManager = new DataManager(sw, this.cacheManager);
     this.notificationManager = new NotificationManager(sw);
 
@@ -58,18 +51,16 @@ export class MainSW extends AbstractSW {
 
   init = async (): Promise<void> => {
     await this.notificationManager.initNotifications();
-    await this.storageManager.estimateStorage();
-    await this.cacheManager.init();
+    await this.storageManager.estimate();
+    await this.cacheManager.init(assetsManifest as never as AssetsManifest);
   };
 
   onInstall: ServiceWorkerGlobalScope["oninstall"] = (_e): void => {
-    console.log("MainSW onInstall version", version.version);
-    _e.waitUntil(this.init());
     _e.waitUntil(this.skipWaiting());
+    _e.waitUntil(this.init());
   };
 
   onActivate: ServiceWorkerGlobalScope["onactivate"] = (_e): void => {
-    console.log("MainSW onActivate version", version.version);
     _e.waitUntil(this.dataManager.enableNavigationPreload());
     _e.waitUntil(this.notificationManager.subscribeToPushNotifications());
     _e.waitUntil(this.cacheManager.deleteOldCaches());
@@ -109,6 +100,15 @@ export class MainSW extends AbstractSW {
         await this.cacheManager.deleteAllCaches();
         break;
       }
+      case CONNECT_CLIENT: {
+        try {
+          this.client = await this.worker.clients.get(senderId);
+        } catch (_err) {
+          console.error(_err);
+        }
+
+        break;
+      }
       case CONNECT_CLIENTS: {
         try {
           const clients = await this.getClients(senderId);
@@ -145,12 +145,16 @@ export class MainSW extends AbstractSW {
   onFetch: ServiceWorkerGlobalScope["onfetch"] = async (
     _e,
   ): Promise<Response | void> => {
-    if (_e.request.url.match(location.origin)) {
+    if (_e.request.url.match(location.origin) && _e.request.method === "GET") {
       _e.respondWith(
         this.dataManager.cacheWithPreload(
           _e.request,
           _e.preloadResponse,
         ),
+      );
+    } else {
+      _e.respondWith(
+        fetch(_e.request),
       );
     }
   };

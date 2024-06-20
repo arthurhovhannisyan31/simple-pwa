@@ -11,7 +11,16 @@ const WebpackPwaManifest = require("webpack-pwa-manifest");
 const manifest = require("./manifest.json");
 const common = require("./webpack.common.config");
 
+const assetsManifestRegExp = new RegExp([
+  "index.html",
+  "manifest",
+  "service-worker",
+  "map$",
+  "LICENSE",
+].join("|"), "gm");
+
 module.exports = merge(common.config, {
+  mode: "production",
   entry: {
     app: path.resolve("src", "index.ts"),
   },
@@ -60,7 +69,7 @@ module.exports = merge(common.config, {
     new WebpackAssetsManifest({
       enabled: !!process.env.__PROD__,
       customize(entry, _, __, asset) {
-        if (entry.key.match(/(map$|service-worker|assets-manifest|index.html|LICENSE)/gm)) {
+        if (entry.key.match(assetsManifestRegExp)) {
           return false;
         }
 

@@ -1,5 +1,7 @@
 // Web-Push
 // Public base64 to Uint
+import type { AssetsConfig, AssetsManifest } from "./types";
+
 export const urlBase64ToUint8Array = (base64String: string): Uint8Array => {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding)
@@ -14,4 +16,14 @@ export const urlBase64ToUint8Array = (base64String: string): Uint8Array => {
   }
 
   return outputArray;
+};
+export const getAssetsConfig = (assetsManifest: AssetsManifest): AssetsConfig => {
+  const resources = Object.values(assetsManifest);
+
+  return resources.reduce((acc, { size, path }) => {
+    acc.paths.push(path);
+    acc.size += size;
+
+    return acc;
+  }, { paths: [] as string[], size: 0 });
 };
