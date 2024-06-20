@@ -9,7 +9,6 @@ const common = require("./webpack.common.config");
 const prod = require("./webpack.prod.config");
 
 module.exports = merge(prod, {
-  target: ["web"],
   mode: "development",
   devtool: "inline-source-map",
   entry: {

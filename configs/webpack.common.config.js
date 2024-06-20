@@ -8,7 +8,6 @@ require("dotenv").config();
 
 module.exports = {
   config: {
-    mode: "production",
     target: ["web", "es2020"],
     output: {
       path: path.resolve("dist"),

@@ -11,7 +11,7 @@ export class StoreManager {
 
   constructor(protected worker: ServiceWorkerGlobalScope) {}
 
-  estimateStorage = async (): Promise<void> => {
+  estimate = async (): Promise<void> => {
     const sm = navigator.storage;
     const { usage, quota } = await sm.estimate();
     if (usage !== undefined && quota !== undefined) {
