@@ -28,5 +28,5 @@ module.exports = {
     },
   },
   hash,
-  ASSET_PATH: process.env.ASSET_PATH || "",
+  ASSET_PATH: "",
 };

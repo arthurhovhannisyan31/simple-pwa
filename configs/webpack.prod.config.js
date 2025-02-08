@@ -89,8 +89,8 @@ module.exports = merge(common.config, {
     }),
     new WebpackPwaManifest({
       ...manifest,
-      publicPath: common.ASSET_PATH,
-      start_url: common.ASSET_PATH,
+      publicPath: "/",
+      start_url: "/",
     }),
     new SourceMapDevToolPlugin({}),
   ],
