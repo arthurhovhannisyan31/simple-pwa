@@ -1,13 +1,12 @@
 import {
-ASSET_PATH,
 logout,
 notifyMe,
 connectClients,
 unregisterSW,
 } from "./helpers";
+import version from "../assets/version.json";
 import { SWManager } from "./service-workers/managers/sw-manager";
 import image from "./static/img/batman.png";
-import version from "../assets/version.json";
 
 import "./style.css";
 
@@ -35,7 +34,7 @@ if (navigator.serviceWorker) {
     serviceWorker = await SWManager.register("service-worker.js", {
       type: "module",
       updateViaCache: "all",
-      scope: ASSET_PATH,
+      scope: "/",
     });
   } catch (err) {
     console.log(err);

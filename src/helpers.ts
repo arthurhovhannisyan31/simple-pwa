@@ -47,8 +47,6 @@ export async function notifyMe(serviceWorker: SWManager): Promise<void> {
   }
 }
 
-export const ASSET_PATH = process.env.ASSET_PATH ?? "";
-
 export function logout(serviceWorker: SWManager): void {
   serviceWorker.postMessage(
     createSimpleAction(LOGOUT),
