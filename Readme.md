@@ -1,4 +1,8 @@
-# Simple PWA
+<div align="center">
+  <h1><code>simple-pwa</code></h1>
+
+  <a href="https://simple-pwa-tawny.vercel.app/">Deployment link</a>
+</div>
 
 ### Description
 This application shows how a Service Worker `SW` can help improve application loading speed by serving cached bundles from the browser cache [Cache API](https://developer.mozilla.org/en-US/docs/Web/API/Cache).
